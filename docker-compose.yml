@@ -1,0 +1,9 @@
+services:
+  reflex-app:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+      - "8000:8000"
+    command: bash -c "reflex init --template blank && reflex run --env dev"
