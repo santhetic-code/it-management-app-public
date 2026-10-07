@@ -143,22 +143,24 @@ def right_panel() -> rx.Component:
                     on_change=LoginState.set_password,
                     width="100%",
                     size="3",
-                    padding_right="2.5em", # Memberi ruang agar teks tidak tertutup ikon
+                    padding_right="2.5em", 
                     border_color="#CBD5E1",
                 ),
-                # Ikon Mata (Mata terbuka/tertutup)
-                rx.icon(
-                    tag=rx.cond(LoginState.show_password, "eye-off", "eye"),
+                # PERBAIKAN: Bungkus ikon dalam box untuk posisi absolute, gunakan rx.cond untuk merender ikon statis
+                rx.box(
+                    rx.cond(
+                        LoginState.show_password,
+                        rx.icon(tag="eye-off", cursor="pointer", on_click=LoginState.toggle_password),
+                        rx.icon(tag="eye", cursor="pointer", on_click=LoginState.toggle_password)
+                    ),
                     position="absolute",
                     right="3",
                     top="50%",
                     transform="translateY(-50%)",
                     color="#64748B",
-                    cursor="pointer",
-                    on_click=LoginState.toggle_password,
                     _hover={"color": "#0F172A"}
                 ),
-                position="relative", # Penting agar ikon absolute mengikuti kotak ini
+                position="relative", 
                 width="100%",
                 margin_bottom="6",
             ),

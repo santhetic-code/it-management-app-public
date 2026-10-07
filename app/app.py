@@ -1,5 +1,6 @@
 import reflex as rx
 
+
 # ==========================================
 # 1. MODEL & CONTROLLER (STATE)
 # ==========================================
@@ -17,7 +18,7 @@ class LoginState(rx.State):
         """Controller: Logika validasi login dengan pesan error generik."""
         # Reset pesan error sebelum pengecekan
         self.error_message = ""
-        
+
         # Validasi kosong
         if not self.username or not self.password:
             self.error_message = "Incorrect username or password."
@@ -30,6 +31,7 @@ class LoginState(rx.State):
             # Pesan error generik demi keamanan (tidak memberi tahu bagian mana yang salah)
             self.error_message = "Incorrect username or password."
 
+
 # ==========================================
 # 2. VIEW: PANEL KIRI (Branding & Identitas)
 # ==========================================
@@ -40,13 +42,12 @@ def left_panel() -> rx.Component:
             # Logo Kustom: Kotak biru dengan ikon boxes
             rx.box(
                 rx.icon(tag="boxes", size=32, color="white"),
-                background_color="#2563EB", # Biru utama
+                background_color="#2563EB",  # Biru utama
                 padding="12px",
                 border_radius="xl",
                 margin_bottom="6",
                 box_shadow="0 4px 6px -1px rgb(37 99 235 / 0.3)",
             ),
-            
             # Judul Utama
             rx.heading(
                 "Kelola Aset IT, Lebih Terpusat. 🖥️",
@@ -56,7 +57,6 @@ def left_panel() -> rx.Component:
                 line_height="1.2",
                 margin_bottom="4",
             ),
-            
             # Deskripsi
             rx.text(
                 "Pantau perangkat, jaringan, dan jadwal perawatan dalam satu dashboard. Data lengkap, keputusan lebih cepat.",
@@ -67,9 +67,7 @@ def left_panel() -> rx.Component:
             ),
             align_items="start",
         ),
-        
-        rx.spacer(), # Mendorong footer ke bagian paling bawah
-        
+        rx.spacer(),  # Mendorong footer ke bagian paling bawah
         # Footer Kiri Bawah
         rx.text(
             "© 2026 XMLTRONIK. Internal use only.",
@@ -77,16 +75,16 @@ def left_panel() -> rx.Component:
             color="#64748B",
             weight="medium",
         ),
-        
         # Styling Panel Kiri
-        width=["100%", "100%", "45%"], # Responsif: Penuh di mobile, 45% di desktop
+        width=["100%", "100%", "45%"],  # Responsif: Penuh di mobile, 45% di desktop
         height=["auto", "auto", "100%"],
         min_height=["40vh", "40vh", "100vh"],
-        background="linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%)", # Gradien biru muda
+        background="linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%)",  # Gradien biru muda
         padding="4em",
         align_items="start",
         justify_content="space-between",
     )
+
 
 # ==========================================
 # 3. VIEW: PANEL KANAN (Formulir Login)
@@ -96,33 +94,46 @@ def right_panel() -> rx.Component:
         # Wadah Form (Agar berada di tengah vertikal)
         rx.vstack(
             # Teks Pojok Kanan Atas (ITAM)
-            rx.text("ITAM", weight="bold", size="6", color="#0F172A", margin_bottom="8"),
-            
+            rx.text(
+                "ITAM", weight="bold", size="6", color="#0F172A", margin_bottom="8"
+            ),
             # Sapaan & Subtitle
-            rx.heading("Welcome", size="8", weight="bold", color="#0F172A", margin_bottom="2"),
+            rx.heading(
+                "Welcome", size="8", weight="bold", color="#0F172A", margin_bottom="2"
+            ),
             rx.text(
                 "The account is created by the IT Administrator. Don't have access yet? Contact the IT team.",
                 size="3",
                 color="#64748B",
                 margin_bottom="6",
             ),
-
             # Area Notifikasi Error
             rx.cond(
                 LoginState.error_message != "",
                 rx.box(
-                    rx.text(LoginState.error_message, color="#EF4444", size="2", weight="medium"),
+                    rx.text(
+                        LoginState.error_message,
+                        color="#EF4444",
+                        size="2",
+                        weight="medium",
+                    ),
                     background_color="#FEE2E2",
                     padding="3",
                     border_radius="md",
                     width="100%",
                     margin_bottom="4",
-                    border="1px solid #F87171"
+                    border="1px solid #F87171",
                 ),
             ),
-
             # Input Username
-            rx.text("Username", size="2", weight="bold", color="#0F172A", width="100%", margin_bottom="1"),
+            rx.text(
+                "Username",
+                size="2",
+                weight="bold",
+                color="#0F172A",
+                width="100%",
+                margin_bottom="1",
+            ),
             rx.input(
                 placeholder="Enter your username",
                 value=LoginState.username,
@@ -132,9 +143,15 @@ def right_panel() -> rx.Component:
                 margin_bottom="4",
                 border_color="#CBD5E1",
             ),
-
             # Input Password dengan Ikon Mata (Show/Hide)
-            rx.text("Password", size="2", weight="bold", color="#0F172A", width="100%", margin_bottom="1"),
+            rx.text(
+                "Password",
+                size="2",
+                weight="bold",
+                color="#0F172A",
+                width="100%",
+                margin_bottom="1",
+            ),
             rx.box(
                 rx.input(
                     placeholder="Enter your password",
@@ -143,61 +160,75 @@ def right_panel() -> rx.Component:
                     on_change=LoginState.set_password,
                     width="100%",
                     size="3",
-                    padding_right="2.5em", # Memberi ruang agar teks tidak tertutup ikon
+                    padding_right="2.5em",
                     border_color="#CBD5E1",
                 ),
-                # Ikon Mata (Mata terbuka/tertutup)
-                rx.icon(
-                    tag=rx.cond(LoginState.show_password, "eye-off", "eye"),
+                # PERBAIKAN: Bungkus ikon dalam box untuk posisi absolute, gunakan rx.cond untuk merender ikon statis
+                rx.box(
+                    rx.cond(
+                        LoginState.show_password,
+                        rx.icon(
+                            tag="eye-off",
+                            cursor="pointer",
+                            on_click=LoginState.toggle_password,
+                        ),
+                        rx.icon(
+                            tag="eye",
+                            cursor="pointer",
+                            on_click=LoginState.toggle_password,
+                        ),
+                    ),
                     position="absolute",
                     right="3",
                     top="50%",
                     transform="translateY(-50%)",
                     color="#64748B",
-                    cursor="pointer",
-                    on_click=LoginState.toggle_password,
-                    _hover={"color": "#0F172A"}
+                    _hover={"color": "#0F172A"},
                 ),
-                position="relative", # Penting agar ikon absolute mengikuti kotak ini
+                position="relative",
                 width="100%",
                 margin_bottom="6",
             ),
-
             # Tombol Login
             rx.button(
                 "Login Now",
                 on_click=LoginState.process_login,
                 width="100%",
                 size="3",
-                background_color="#2563EB", # Biru utama
+                background_color="#2563EB",  # Biru utama
                 color="white",
                 cursor="pointer",
-                _hover={"background_color": "#1D4ED8"}, # Biru lebih gelap saat di-hover
+                _hover={
+                    "background_color": "#1D4ED8"
+                },  # Biru lebih gelap saat di-hover
                 margin_bottom="6",
             ),
-
             # Teks Lupa Password
             rx.text(
                 "Forgot password? ",
-                rx.text.span("Contact the IT Administrator.", color="#2563EB", cursor="pointer", _hover={"text_decoration": "underline"}),
+                rx.text.span(
+                    "Contact the IT Administrator.",
+                    color="#2563EB",
+                    cursor="pointer",
+                    _hover={"text_decoration": "underline"},
+                ),
                 size="2",
                 color="#64748B",
                 width="100%",
             ),
-            
             width="100%",
-            max_width="450px", # Membatasi lebar form agar rapi
+            max_width="450px",  # Membatasi lebar form agar rapi
             align_items="start",
         ),
-        
         # Styling Panel Kanan
-        width=["100%", "100%", "55%"], # Responsif: Penuh di mobile, 55% di desktop
+        width=["100%", "100%", "55%"],  # Responsif: Penuh di mobile, 55% di desktop
         height="100vh",
         background_color="#FFFFFF",
         padding="4em",
         align_items="center",
-        justify_content="center", # Memposisikan form di tengah layar vertikal
+        justify_content="center",  # Memposisikan form di tengah layar vertikal
     )
+
 
 # ==========================================
 # 4. VIEW: HALAMAN UTAMA (Main Container)
@@ -208,9 +239,14 @@ def login_page() -> rx.Component:
         right_panel(),
         width="100vw",
         height="100vh",
-        flex_direction=["column", "column", "row"], # Responsif: Atas-bawah di HP, Kiri-Kanan di Laptop
+        flex_direction=[
+            "column",
+            "column",
+            "row",
+        ],  # Responsif: Atas-bawah di HP, Kiri-Kanan di Laptop
         overflow="hidden",
     )
+
 
 # Inisialisasi Aplikasi
 app = rx.App(
